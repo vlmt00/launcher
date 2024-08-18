@@ -1,0 +1,14 @@
+C:\Users\user\github\launcher\launcher\bin\Debug\net8.0-windows\launcher.exe
+C:\Users\user\github\launcher\launcher\bin\Debug\net8.0-windows\launcher.deps.json
+C:\Users\user\github\launcher\launcher\bin\Debug\net8.0-windows\launcher.runtimeconfig.json
+C:\Users\user\github\launcher\launcher\bin\Debug\net8.0-windows\launcher.dll
+C:\Users\user\github\launcher\launcher\bin\Debug\net8.0-windows\launcher.pdb
+C:\Users\user\github\launcher\launcher\obj\Debug\net8.0-windows\launcher.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\user\github\launcher\launcher\obj\Debug\net8.0-windows\launcher.AssemblyInfoInputs.cache
+C:\Users\user\github\launcher\launcher\obj\Debug\net8.0-windows\launcher.AssemblyInfo.cs
+C:\Users\user\github\launcher\launcher\obj\Debug\net8.0-windows\launcher.csproj.CoreCompileInputs.cache
+C:\Users\user\github\launcher\launcher\obj\Debug\net8.0-windows\launcher.dll
+C:\Users\user\github\launcher\launcher\obj\Debug\net8.0-windows\refint\launcher.dll
+C:\Users\user\github\launcher\launcher\obj\Debug\net8.0-windows\launcher.pdb
+C:\Users\user\github\launcher\launcher\obj\Debug\net8.0-windows\launcher.genruntimeconfig.cache
+C:\Users\user\github\launcher\launcher\obj\Debug\net8.0-windows\ref\launcher.dll
