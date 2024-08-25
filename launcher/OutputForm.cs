@@ -5,55 +5,108 @@ using System.Windows.Forms;
 
 namespace launcher
 {
+    public class TransparentRichTextBox : RichTextBox
+    {
+        public TransparentRichTextBox()
+        {
+            // 背景を透過するための設定
+            this.SetStyle(ControlStyles.SupportsTransparentBackColor, true);
+            this.BackColor = Color.Transparent;
+            this.Multiline = true;
+            this.BorderStyle = BorderStyle.None;
+        }
+
+        protected override CreateParams CreateParams
+        {
+            get
+            {
+                CreateParams cp = base.CreateParams;
+                cp.ExStyle |= 0x20; // WS_EX_TRANSPARENT
+                return cp;
+            }
+        }
+
+        protected override void OnPaintBackground(PaintEventArgs e)
+        {
+            // 背景の塗りつぶしをスキップして透過
+        }
+
+        protected override void WndProc(ref Message m)
+        {
+            base.WndProc(ref m);
+
+            if (m.Msg == 0x0F) // WM_PAINT
+            {
+                using (Graphics g = this.CreateGraphics())
+                {
+                    // 背景を半透明に設定 (128は透明度の値、0～255で指定)
+                    Color semiTransparentColor = Color.FromArgb(128, this.Parent.BackColor);
+                    using (SolidBrush brush = new SolidBrush(semiTransparentColor))
+                    {
+                        g.FillRectangle(brush, this.ClientRectangle);
+                    }
+                }
+            }
+        }
+    }
     public partial class OutputForm : Form
     {
-        private System.Timers.Timer closeTimer;
-        private System.Timers.Timer fadeOutTimer;
+        private RichTextBox outputTextBox = new RichTextBox
+        {
+            Multiline = true,
+            ReadOnly = true,
+            ScrollBars = RichTextBoxScrollBars.Vertical,
+            Dock = DockStyle.Fill,
+            BackColor = Color.Black,
+            WordWrap = false,
+            HideSelection = false,
+            Font = new Font("Arial", 10),
+            ForeColor = Color.White
+        };
+        private System.Timers.Timer closeTimer = new System.Timers.Timer();
+        private System.Timers.Timer fadeOutTimer = new System.Timers.Timer();
         private float transparency;
         private int fadeOutInterval;
         private bool isError;
 
-        public OutputForm(string command, string output, float transparency, int displayDuration, int fadeOutInterval, bool isError, int maxLines)
+        public OutputForm()
         {
             InitializeComponent();
 
-            this.transparency = transparency;
-            this.fadeOutInterval = fadeOutInterval;
-            this.isError = isError;
-
-            this.Text = command;
-            this.Opacity = transparency;
-            this.BackColor = isError ? Color.LightCoral : Color.White;
             this.FormBorderStyle = FormBorderStyle.FixedToolWindow;
 
-            TextBox outputTextBox = new TextBox
-            {
-                Multiline = true,
-                ReadOnly = true,
-                ScrollBars = ScrollBars.Vertical,
-                Dock = DockStyle.Fill,
-                BackColor = isError ? Color.LightCoral : Color.White
-            };
-
-            outputTextBox.Text = output;
-            outputTextBox.SelectionStart = outputTextBox.Text.Length;
-            outputTextBox.SelectionLength = 0;
-            outputTextBox.ScrollToCaret();
+            // this.BackColor = Color.Lime;  // ウィンドウ背景を特殊な色に設定
+            // this.TransparencyKey = Color.Lime;
 
             this.Controls.Add(outputTextBox);
+            this.Show();
+        }
 
-            int lines = outputTextBox.GetLineFromCharIndex(outputTextBox.TextLength) + 1;
-            this.ClientSize = new Size(this.ClientSize.Width, Math.Min(lines, maxLines) * outputTextBox.Font.Height + 10);
+        public int AppendText(string text, Color textColor, Color bgColor)
+        {
+            // 現在のテキスト末尾にカーソルを移動
+            outputTextBox.SelectionStart = outputTextBox.TextLength;
+            outputTextBox.SelectionLength = 0;
 
-            // closeTimer の初期化
-            closeTimer = new System.Timers.Timer(displayDuration);
-            closeTimer.Elapsed += CloseTimerElapsed;
-            fadeOutTimer = new System.Timers.Timer(fadeOutInterval);
-            fadeOutTimer.Elapsed += FadeOutTimerElapsed;
+            // テキストの色を設定
+            outputTextBox.SelectionColor = textColor;
+            outputTextBox.SelectionBackColor = bgColor;
 
-            // fadeOutTimer の初期化
-            fadeOutTimer = new System.Timers.Timer(fadeOutInterval);
-            fadeOutTimer.Elapsed += FadeOutTimerElapsed;
+            // テキストを追加
+            outputTextBox.AppendText(text);
+
+            // カーソルの色をデフォルトに戻す
+            outputTextBox.SelectionColor = outputTextBox.ForeColor;
+            outputTextBox.SelectionBackColor = outputTextBox.BackColor;
+
+            // 現在のテキストを末尾にカーソルを移動
+            outputTextBox.Select(outputTextBox.Text.Length, 0);
+            outputTextBox.SelectionStart = outputTextBox.Text.Length;
+            outputTextBox.SelectionLength = 0;
+            outputTextBox.Focus();
+            outputTextBox.ScrollToCaret();
+
+            return outputTextBox.Lines.Length + 1;
         }
 
         public void StopFadeOut()
@@ -94,9 +147,10 @@ namespace launcher
             //
             // OutputForm
             //
-            this.ClientSize = new System.Drawing.Size(284, 261);
+            this.ClientSize = new System.Drawing.Size(420, 261);
             this.Name = "OutputForm";
             this.ResumeLayout(false);
         }
     }
+
 }
