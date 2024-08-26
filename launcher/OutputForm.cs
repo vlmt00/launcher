@@ -1,56 +1,14 @@
 using System;
+using System.Diagnostics.Tracing;
 using System.Drawing;
 using System.Timers;
 using System.Windows.Forms;
 
 namespace launcher
 {
-    public class TransparentRichTextBox : RichTextBox
-    {
-        public TransparentRichTextBox()
-        {
-            // 背景を透過するための設定
-            this.SetStyle(ControlStyles.SupportsTransparentBackColor, true);
-            this.BackColor = Color.Transparent;
-            this.Multiline = true;
-            this.BorderStyle = BorderStyle.None;
-        }
-
-        protected override CreateParams CreateParams
-        {
-            get
-            {
-                CreateParams cp = base.CreateParams;
-                cp.ExStyle |= 0x20; // WS_EX_TRANSPARENT
-                return cp;
-            }
-        }
-
-        protected override void OnPaintBackground(PaintEventArgs e)
-        {
-            // 背景の塗りつぶしをスキップして透過
-        }
-
-        protected override void WndProc(ref Message m)
-        {
-            base.WndProc(ref m);
-
-            if (m.Msg == 0x0F) // WM_PAINT
-            {
-                using (Graphics g = this.CreateGraphics())
-                {
-                    // 背景を半透明に設定 (128は透明度の値、0～255で指定)
-                    Color semiTransparentColor = Color.FromArgb(128, this.Parent.BackColor);
-                    using (SolidBrush brush = new SolidBrush(semiTransparentColor))
-                    {
-                        g.FillRectangle(brush, this.ClientRectangle);
-                    }
-                }
-            }
-        }
-    }
     public partial class OutputForm : Form
     {
+
         private RichTextBox outputTextBox = new RichTextBox
         {
             Multiline = true,
@@ -73,7 +31,7 @@ namespace launcher
         {
             InitializeComponent();
 
-            this.FormBorderStyle = FormBorderStyle.FixedToolWindow;
+            //this.FormBorderStyle = FormBorderStyle.FixedToolWindow;
 
             // this.BackColor = Color.Lime;  // ウィンドウ背景を特殊な色に設定
             // this.TransparencyKey = Color.Lime;
@@ -143,13 +101,14 @@ namespace launcher
 
         private void InitializeComponent()
         {
-            this.SuspendLayout();
+            //this.SuspendLayout();
             //
             // OutputForm
             //
             this.ClientSize = new System.Drawing.Size(420, 261);
             this.Name = "OutputForm";
-            this.ResumeLayout(false);
+            //this.ResumeLayout(false);
+            this.FormBorderStyle = FormBorderStyle.None;
         }
     }
 
